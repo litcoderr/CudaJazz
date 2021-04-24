@@ -3,9 +3,9 @@
 
 #define N (10)
 
-__global__ void cuda_hello(float* a, float* b, float* out, int dim) {
+__global__ void cuda_mul(float* a, float* b, float* out, int dim) {
     for(int i=0; i<dim; i++) {
-        out[i] = a[i] + b[i];
+        out[i] = a[i] * b[i];
     }
 }
 
@@ -14,12 +14,14 @@ int main() {
     Tensor* t1 = new Tensor(2, shape);
     t1->print_shape();
 
-    /*
-    // host memory
+    /********Check out the code below********/
+
+    // host memory location
     float* a = (float*)malloc(sizeof(float)*N);
     float* b = (float*)malloc(sizeof(float)*N);
     float* out = (float*)malloc(sizeof(float)*N);
 
+    // device memory location
     float* d_a;
     float* d_b;
     float* d_out;
@@ -40,7 +42,7 @@ int main() {
     cudaMemcpy(d_a, a, sizeof(float) * N, cudaMemcpyHostToDevice);
     cudaMemcpy(d_b, b, sizeof(float) * N, cudaMemcpyHostToDevice);
 
-    cuda_hello<<<1, 1>>>(d_a, d_b, d_out, N);
+    cuda_mul<<<1, 1>>>(d_a, d_b, d_out, N);
 
     // transfer to host memeory
     cudaMemcpy(out, d_out, sizeof(float) * N, cudaMemcpyDeviceToHost);
@@ -59,6 +61,5 @@ int main() {
     free(b);
     free(out);
 
-    */
     return 0;
 }
