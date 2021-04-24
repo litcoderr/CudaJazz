@@ -5,11 +5,6 @@
 */
 class Tensor {
 public:
-    
-};
-
-class Tensor1D: public Tensor {
-public:
     /// dimension. ex) 10
     int dim;
 
@@ -17,7 +12,14 @@ public:
     int* shape;
 
     /** Constructor*/
-    Tensor1D(int dim);
+    Tensor(int dim, int* shape);
+
+    /** Deconstructor*/
+    ~Tensor();
+
+
+    /** print shape */
+    void print_shape();
 };
 
 #endif

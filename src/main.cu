@@ -10,8 +10,9 @@ __global__ void cuda_hello(float* a, float* b, float* out, int dim) {
 }
 
 int main() {
-    Tensor1D* t1 = new Tensor1D(10);
-    std::cout << "shape: " << t1->shape[0] << std::endl;
+    int shape[2] = {10, 20};
+    Tensor* t1 = new Tensor(2, shape);
+    t1->print_shape();
 
     /*
     // host memory

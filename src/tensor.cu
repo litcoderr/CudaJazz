@@ -2,14 +2,27 @@
 #include <stdexcept>
 #include "tensor.hpp"
 
-Tensor1D::Tensor1D(int d1) {
-    this->dim = 1;
+Tensor::Tensor(int dim, int* shape) {
+    this->dim = dim;
     this->shape = new int[this->dim];
-    this->shape[0] = d1;
-
-    // validate dimension size
-    // TODO validate from parent Tensor class constructor
-    if(d1<=0) {
-        throw std::invalid_argument("Tensor1D dimension is less than or equal to 0");
+    for(int i=0; i<this->dim; i++) {
+        // validate dimension size
+        if(shape[i]<=0) {
+            throw std::invalid_argument("Tensor dimension is less than or equal to 0");
+        }
+        this->shape[i] = shape[i];
     }
+}
+
+Tensor::~Tensor() {
+    delete[] this->shape;
+}
+
+void Tensor::print_shape() {
+    std::cout << "(";
+    for(int i=0; i<this->dim; i++) {
+        std::cout << this->shape[i];
+        if(i!=this->dim-1) std::cout << ", ";
+    }
+    std::cout << ")\n";
 }
