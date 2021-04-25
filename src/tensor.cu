@@ -12,10 +12,34 @@ Tensor::Tensor(int dim, int* shape) {
         }
         this->shape[i] = shape[i];
     }
+
+    // Initialize matrix
+    int size = this->get_size();
+    this->matrix = new int[size];
+    for(int i=0; i<size; i++) {
+        this->matrix[i] = 0;
+    }
+}
+
+Tensor::Tensor(int dim, int* shape, int* matrix): Tensor::Tensor(dim, shape) {
+    // Update matrix to argument value
+    int size = this->get_size();
+    for(int i=0; i<size; i++) {
+        this->matrix[i] = matrix[i];
+    }
 }
 
 Tensor::~Tensor() {
     delete[] this->shape;
+    delete[] this->matrix;
+}
+
+int Tensor::get_size() {
+    int size = 0;
+    for(int i=0; i<this->dim; i++) {
+        size += this->shape[i];
+    }
+    return size;
 }
 
 void Tensor::print_shape() {

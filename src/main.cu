@@ -11,8 +11,13 @@ __global__ void cuda_mul(float* a, float* b, float* out, int dim) {
 
 int main() {
     int shape[2] = {10, 20};
-    Tensor* t1 = new Tensor(2, shape);
+    int* matrix = new int[200];
+    Tensor* t1 = new Tensor(2, shape, matrix);
+    std::cout << t1->matrix[1] << std::endl;
     t1->print_shape();
+
+    delete[] matrix;
+    delete t1;
 
     /********Check out the code below********/
 
