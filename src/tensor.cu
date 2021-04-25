@@ -50,3 +50,26 @@ void Tensor::print_shape() {
     }
     std::cout << ")\n";
 }
+
+/**************** Operator Overloading ******************/
+Tensor& operator*(const Tensor& t1, const Tensor& t2) {
+    if(t1.shape[t1.dim-1]!=t2.shape[0]) {
+        throw std::invalid_argument("Invalid dimension for matrix multiplication");
+    }
+
+    int dim_3 = t1.dim + t2.dim -2;
+    int* shape = new int[dim_3];
+    for(int i=0; i< t1.dim-1; i++) {
+        shape[i] = t1.shape[i];
+    }
+    for(int i=1; i< t2.dim; i++) {
+        shape[t1.dim+i-2] = t2.shape[i];
+    }
+
+    Tensor& t3 = *(new Tensor(dim_3, shape));
+
+    // TODO Implement CUDA based matrix multiplication
+    
+    delete shape;
+    return t3;
+}

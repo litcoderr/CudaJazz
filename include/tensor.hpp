@@ -3,6 +3,7 @@
 
 /** Parent Tensor class
 */
+class Tensor;
 class Tensor {
 public:
     /// dimension. ex) 10
@@ -32,6 +33,9 @@ public:
 
     /** print shape */
     void print_shape();
+
+    friend Tensor& operator*(const Tensor& t1, const Tensor& t2);
 };
+
 
 #endif
