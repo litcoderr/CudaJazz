@@ -12,7 +12,7 @@ __global__ void cuda_mul(float* a, float* b, float* out, int dim) {
 int main() {
     // tensor 1
     int shape_1[2] = {10, 20};
-    int* matrix_1 = new int[200];
+    double matrix_1[200];
     for(int i=0; i<200; i++) {
         matrix_1[i] = 2;
     }
@@ -20,7 +20,7 @@ int main() {
 
     // tensor 2
     int shape_2[2] = {20, 5};
-    int* matrix_2 = new int[100];
+    double matrix_2[100];
     for(int i=0; i<100; i++) {
         matrix_2[i] = 3;
     }
@@ -28,9 +28,7 @@ int main() {
 
     Tensor& t3 = t1 * t2;
 
-    delete[] matrix_1;
     delete &t1;
-    delete[] matrix_2;
     delete &t2;
     delete &t3;
 

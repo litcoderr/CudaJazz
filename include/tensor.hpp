@@ -11,7 +11,7 @@ public:
     /// 1 dimensional shape
     int* shape;
     /// matrix
-    int* matrix;
+    double* matrix;
 
     /** Constructor
      * Default 0 Matrix
@@ -21,7 +21,7 @@ public:
     /** Constructor
      * Initialize matrix to argument value
     */
-    Tensor(int dim, int* shape, int* matrix);
+    Tensor(int dim, int* shape, double* matrix);
 
     /** Deconstructor*/
     ~Tensor();

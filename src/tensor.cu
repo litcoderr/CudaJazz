@@ -15,13 +15,13 @@ Tensor::Tensor(int dim, int* shape) {
 
     // Initialize matrix
     int size = this->get_size();
-    this->matrix = new int[size];
+    this->matrix = new double[size];
     for(int i=0; i<size; i++) {
         this->matrix[i] = 0;
     }
 }
 
-Tensor::Tensor(int dim, int* shape, int* matrix): Tensor::Tensor(dim, shape) {
+Tensor::Tensor(int dim, int* shape, double* matrix): Tensor::Tensor(dim, shape) {
     // Update matrix to argument value
     int size = this->get_size();
     for(int i=0; i<size; i++) {
@@ -35,9 +35,9 @@ Tensor::~Tensor() {
 }
 
 int Tensor::get_size() {
-    int size = 0;
+    int size = 1;
     for(int i=0; i<this->dim; i++) {
-        size += this->shape[i];
+        size *= this->shape[i];
     }
     return size;
 }
@@ -53,10 +53,12 @@ void Tensor::print_shape() {
 
 /**************** Operator Overloading ******************/
 Tensor& operator*(const Tensor& t1, const Tensor& t2) {
+    // throw invalid dimension for matrix multiplication
     if(t1.shape[t1.dim-1]!=t2.shape[0]) {
-        throw std::invalid_argument("Invalid dimension for matrix multiplication");
+        throw std::length_error("Invalid dimension for matrix multiplication");
     }
 
+    // init shape
     int dim_3 = t1.dim + t2.dim -2;
     int* shape = new int[dim_3];
     for(int i=0; i< t1.dim-1; i++) {
@@ -68,7 +70,27 @@ Tensor& operator*(const Tensor& t1, const Tensor& t2) {
 
     Tensor& t3 = *(new Tensor(dim_3, shape));
 
-    // TODO Implement CUDA based matrix multiplication
+    /*--------------- 1. Compute matrix ---------------*/
+    // host memory (t1.matrix, t2.matrix, t3.matrix)
+    // allocate device memory
+    double* m1;
+    double* m2;
+    double* m3;
+
+    cudaMalloc((void**)&m1, sizeof(double) * t1.get_size());
+    cudaMalloc((void**)&m2, sizeof(double) * t2.get_size());
+    cudaMalloc((void**)&m3, sizeof(double) * t3.get_size());
+
+    // compute
+    // TODO define cuda kernel for matrix multiplication
+
+    /*--------------- 2. Update Matrix ---------------*/
+    cudaMemcpy(t3.matrix, m3, sizeof(double) * N, cudaMemcpyDeviceToHost);
+
+    // free device memory
+    cudaFree(m1);
+    cudaFree(m2);
+    cudaFree(m3);
     
     delete shape;
     return t3;
