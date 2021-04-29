@@ -85,7 +85,8 @@ Tensor& operator*(const Tensor& t1, const Tensor& t2) {
     // TODO define cuda kernel for matrix multiplication
 
     /*--------------- 2. Update Matrix ---------------*/
-    cudaMemcpy(t3.matrix, m3, sizeof(double) * N, cudaMemcpyDeviceToHost);
+    // TODO fix bug
+    cudaMemcpy(t3.matrix, m3, sizeof(double) * t3.get_size(), cudaMemcpyDeviceToHost);
 
     // free device memory
     cudaFree(m1);
