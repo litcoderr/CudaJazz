@@ -34,7 +34,7 @@ Tensor::~Tensor() {
     delete[] this->matrix;
 }
 
-int Tensor::get_size() {
+int Tensor::get_size() const {
     int size = 1;
     for(int i=0; i<this->dim; i++) {
         size *= this->shape[i];
@@ -42,13 +42,17 @@ int Tensor::get_size() {
     return size;
 }
 
-void Tensor::print_shape() {
+void Tensor::print_shape() const {
     std::cout << "(";
     for(int i=0; i<this->dim; i++) {
         std::cout << this->shape[i];
         if(i!=this->dim-1) std::cout << ", ";
     }
     std::cout << ")\n";
+}
+
+void Tensor::print() const {
+
 }
 
 /**************** Operator Overloading ******************/
@@ -85,7 +89,6 @@ Tensor& operator*(const Tensor& t1, const Tensor& t2) {
     // TODO define cuda kernel for matrix multiplication
 
     /*--------------- 2. Update Matrix ---------------*/
-    // TODO fix bug
     cudaMemcpy(t3.matrix, m3, sizeof(double) * t3.get_size(), cudaMemcpyDeviceToHost);
 
     // free device memory

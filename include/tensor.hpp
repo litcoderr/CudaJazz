@@ -29,10 +29,13 @@ public:
     /** get matrix size
      * Use only if shape is valid 
     */
-    int get_size();
+    int get_size() const;
 
     /** print shape */
-    void print_shape();
+    void print_shape() const;
+
+    /** print tensor */
+    void print() const;
 
     friend Tensor& operator*(const Tensor& t1, const Tensor& t2);
 };
