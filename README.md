@@ -14,16 +14,16 @@ Tensor is a multi-dimensional matrix that can be added, subtracted and multiplie
 int shape[3] = {2, 10, 30};
 
 // 2. define an array
-double matrix_1[600];
+double matrix[600];
 
 // in this case, matrix is initialized as matrix of ones
 for(int i=0; i<600; i++) {
-    matrix_1[i] = 1;
+    matrix[i] = 1;
 }
 
 // 3. allocate a tensor
 // arguments are as follows. (int dimension, int* shape, double* matrix)
-Tensor& t1 = *(new Tensor(3, shape_1, matrix_1));
+Tensor& tensor = *(new Tensor(3, shape, matrix));
 ```
 
 #### Addition
