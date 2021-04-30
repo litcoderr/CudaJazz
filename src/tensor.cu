@@ -160,14 +160,14 @@ Tensor& operator*(const Tensor& t1, const Tensor& t2) {
 
 __global__ void cuda_mat_mul(double* m1, double* m2, double* m3, int n_row, int N, int n_col) {
     // TODO define cuda kernel for matrix multiplication
-    int row = blockIdx.y * blockDim.y + threadIdx.y;
-    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    int row = blockIdx.x * blockDim.x + threadIdx.x;
+    int col = blockIdx.y * blockDim.y + threadIdx.y;
     
     if(row < n_row && col < n_col) {
         double temp = 0;
         for(int i=0; i<N; i++) {
             temp += m1[row * n_row + i] * m2[i * n_col + col];
         }
-        m3[row * n_row + col] = temp;
+        m3[row * n_col + col] = temp;
     }
 }
