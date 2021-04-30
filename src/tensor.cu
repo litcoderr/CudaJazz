@@ -100,6 +100,44 @@ void Tensor::print_(int cur_idx, int cur_dim, int size) const {
 }
 
 /**************** Operator Overloading ******************/
+Tensor& operator+(const Tensor& t1, const Tensor& t2) {
+    if(t1.dim!=t2.dim) throw std::length_error("Unable to add matrices with different dimensions");
+    else {
+        for(int i=0;i<t1.dim;i++) {
+            if(t1.shape[i]!=t2.shape[i]) throw std::length_error("Unable to add matrices with different shape");
+        }
+    }
+
+    // initialize t3
+    Tensor& t3 = *(new Tensor(t1.dim, t1.shape));
+
+    /*--------------- 1. Compute matrix ---------------*/
+    // host memory (t1.matrix, t2.matrix, t3.matrix)
+    // allocate device memory
+    double* m1;
+    double* m2;
+    double* m3;
+
+    cudaMalloc((void**)&m1, sizeof(double) * t1.get_size());
+    cudaMalloc((void**)&m2, sizeof(double) * t2.get_size());
+    cudaMalloc((void**)&m3, sizeof(double) * t3.get_size());
+
+    // copy t1, t2's matrix to device
+    cudaMemcpy(m1, t1.matrix, sizeof(double) * t1.get_size(), cudaMemcpyHostToDevice);
+    cudaMemcpy(m2, t2.matrix, sizeof(double) * t2.get_size(), cudaMemcpyHostToDevice);
+
+    // compute
+    int n_row = t2.get_righthand_size();
+    int n_col = t2.shape[0];
+    dim3 blocksPerGrid((int)std::ceil((double)n_row / BLOCK_SIZE),
+                       (int)std::ceil((double)n_col / BLOCK_SIZE));
+    dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
+
+    // TODO implement addition
+
+    return t3;
+}
+
 Tensor& operator*(const Tensor& t1, const Tensor& t2) {
     // throw invalid dimension for matrix multiplication
     if(t1.dim<2 || t2.dim<2) {
@@ -159,15 +197,24 @@ Tensor& operator*(const Tensor& t1, const Tensor& t2) {
 /****************  Cuda Kernel Definition ******************/
 
 __global__ void cuda_mat_mul(double* m1, double* m2, double* m3, int n_row, int N, int n_col) {
-    // TODO define cuda kernel for matrix multiplication
     int row = blockIdx.x * blockDim.x + threadIdx.x;
     int col = blockIdx.y * blockDim.y + threadIdx.y;
     
     if(row < n_row && col < n_col) {
         double temp = 0;
         for(int i=0; i<N; i++) {
+            // TODO validate
             temp += m1[row * n_row + i] * m2[i * n_col + col];
         }
         m3[row * n_col + col] = temp;
+    }
+}
+
+__global__ void cuda_mat_add(double* m1, double* m2, double* m3, int n_row, int n_col) {
+    int row = blockIdx.x * blockDim.x + threadIdx.x;
+    int col = blockIdx.y * blockDim.y + threadIdx.y;
+
+    if(row < n_row && col < n_col) {
+        // TODO validate
     }
 }

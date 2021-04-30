@@ -4,6 +4,7 @@
 #define BLOCK_SIZE (32)
 
 __global__ void cuda_mat_mul(double* m1, double* m2, double* m3, int n_row, int N, int n_col);
+__global__ void cuda_mat_add(double* m1, double* m2, double* m3, int n_row, int n_col);
 
 /** Parent Tensor class
 */
@@ -43,6 +44,7 @@ public:
     /** print tensor */
     void print() const;
 
+    friend Tensor& operator+(const Tensor& t1, const Tensor& t2);
     friend Tensor& operator*(const Tensor& t1, const Tensor& t2);
 private:
 
