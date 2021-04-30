@@ -1,6 +1,10 @@
 #ifndef TENSOR_HPP
 #define TENSOR_HPP
 
+#define BLOCK_SIZE (32)
+
+__global__ void cuda_mat_mul(double* m1, double* m2, double* m3, int N);
+
 /** Parent Tensor class
 */
 class Tensor;
@@ -30,6 +34,8 @@ public:
      * Use only if shape is valid 
     */
     int get_size() const;
+    int get_lefthand_size() const;
+    int get_righthand_size() const;
 
     /** print shape */
     void print_shape() const;

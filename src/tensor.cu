@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include <stdexcept>
 #include "tensor.hpp"
 
@@ -42,6 +43,28 @@ int Tensor::get_size() const {
     return size;
 }
 
+int Tensor::get_lefthand_size() const {
+    if(this->dim < 2) {
+        throw std::length_error("Non-matrix tensor does not have lefthand size");
+    }
+    int size = 1;
+    for(int i=0;i<dim-1;i++) {
+        size *= this->shape[i];
+    }
+    return size;
+}
+
+int Tensor::get_righthand_size() const {
+    if(this->dim < 2) {
+        throw std::length_error("Non-matrix tensor does not have righthand size");
+    }
+    int size = 1;
+    for(int i=1;i<dim;i++) {
+        size *= this->shape[i];
+    }
+    return size;
+}
+
 void Tensor::print_shape() const {
     std::cout << "(";
     for(int i=0; i<this->dim; i++) {
@@ -58,6 +81,9 @@ void Tensor::print() const {
 /**************** Operator Overloading ******************/
 Tensor& operator*(const Tensor& t1, const Tensor& t2) {
     // throw invalid dimension for matrix multiplication
+    if(t1.dim<2 || t2.dim<2) {
+        throw std::length_error("Non-matrix tensors cannot be mutiplied");
+    }
     if(t1.shape[t1.dim-1]!=t2.shape[0]) {
         throw std::length_error("Invalid dimension for matrix multiplication");
     }
@@ -85,8 +111,16 @@ Tensor& operator*(const Tensor& t1, const Tensor& t2) {
     cudaMalloc((void**)&m2, sizeof(double) * t2.get_size());
     cudaMalloc((void**)&m3, sizeof(double) * t3.get_size());
 
+    // copy t1, t2's matrix to device
+    cudaMemcpy(m1, t1.matrix, sizeof(double) * t1.get_size(), cudaMemcpyHostToDevice);
+    cudaMemcpy(m2, t2.matrix, sizeof(double) * t2.get_size(), cudaMemcpyHostToDevice);
+
     // compute
-    // TODO define cuda kernel for matrix multiplication
+    dim3 blocksPerGrid((int)std::ceil((double)t1.get_lefthand_size()/BLOCK_SIZE),
+                       (int)std::ceil((double)t2.get_righthand_size()/BLOCK_SIZE));
+    dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
+
+    cuda_mat_mul<<<blocksPerGrid, threadsPerBlock>>>(m1, m2, m3, t2.shape[0]);
 
     /*--------------- 2. Update Matrix ---------------*/
     cudaMemcpy(t3.matrix, m3, sizeof(double) * t3.get_size(), cudaMemcpyDeviceToHost);
@@ -98,4 +132,11 @@ Tensor& operator*(const Tensor& t1, const Tensor& t2) {
     
     delete shape;
     return t3;
+}
+
+
+/****************  Cuda Kernel Definition ******************/
+
+__global__ void cuda_mat_mul(double* m1, double* m2, double* m3, int N) {
+    // TODO define cuda kernel for matrix multiplication
 }
