@@ -1,14 +1,6 @@
 #include <iostream>
 #include "tensor.hpp"
 
-#define N (10)
-
-__global__ void cuda_mul(float* a, float* b, float* out, int dim) {
-    for(int i=0; i<dim; i++) {
-        out[i] = a[i] * b[i];
-    }
-}
-
 int main() {
     // tensor 1
     int shape_1[3] = {2, 10, 30};
