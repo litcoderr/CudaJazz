@@ -133,8 +133,16 @@ Tensor& operator+(const Tensor& t1, const Tensor& t2) {
                        (int)std::ceil((double)n_col / BLOCK_SIZE));
     dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
 
-    // TODO implement addition
+    cuda_mat_add<<<blocksPerGrid, threadsPerBlock>>>(m1, m2, m3, n_row, n_col);
 
+    /*--------------- 2. Update Matrix ---------------*/
+    cudaMemcpy(t3.matrix, m3, sizeof(double) * t3.get_size(), cudaMemcpyDeviceToHost);
+
+    // free device memory
+    cudaFree(m1);
+    cudaFree(m2);
+    cudaFree(m3);
+    
     return t3;
 }
 
@@ -203,8 +211,7 @@ __global__ void cuda_mat_mul(double* m1, double* m2, double* m3, int n_row, int 
     if(row < n_row && col < n_col) {
         double temp = 0;
         for(int i=0; i<N; i++) {
-            // TODO validate
-            temp += m1[row * n_row + i] * m2[i * n_col + col];
+            temp += m1[row * N + i] * m2[i * n_col + col];
         }
         m3[row * n_col + col] = temp;
     }
@@ -215,6 +222,6 @@ __global__ void cuda_mat_add(double* m1, double* m2, double* m3, int n_row, int 
     int col = blockIdx.y * blockDim.y + threadIdx.y;
 
     if(row < n_row && col < n_col) {
-        // TODO validate
+        m3[row * n_col + col] = m1[row * n_col + col] + m2[row * n_col + col];
     }
 }
